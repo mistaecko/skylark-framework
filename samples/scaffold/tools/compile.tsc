@@ -1,0 +1,8 @@
+--sourcemap
+--declaration
+--removeComments
+--target ES5
+--module amd
+--sourceRoot src
+--out build/game.js
+src/_references.ts

@@ -1,0 +1,12 @@
+tmp.*
+tmp/
+
+node_modules/
+
+src/**/*.js
+src/**/*.js.map
+src/*.js
+src/*.js.map
+
+# OS X temporary folders
+.DS_Store

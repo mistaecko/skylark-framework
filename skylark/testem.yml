@@ -1,0 +1,19 @@
+framework: mocha+chai
+src_files:
+  - src/**/*.js
+  - test/SanityTests.js
+  - test/_common.js
+  - test/skylark-compiled/util/**/*.js
+  - test/skylark-compiled/**/*Tests.js
+serve_files:
+  - test/mocha/browser-init-bdd.js
+  - lib/sinonjs/sinon-1.7.1.js
+  - node_modules/sinon-chai/lib/sinon-chai.js
+  - lib/jquery/1.9.1/jquery-1.9.1.js
+  - lib/jquery/jquery.simulate.js
+  - lib/js-imagediff/1.0.3/imagediff.js
+  - target/skylark.js
+  - test/_common.js
+  - test/skylark-compiled/util/Helpers.js
+  - test/skylark-compiled/util/Stubs.js
+  - test/skylark-compiled/**/*Tests.js

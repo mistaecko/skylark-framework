@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://texturepacker.com-->
+<!-- $TexturePacker:SmartUpdate:ae0fac560fc9f4c564a40221b8a5162c$ -->
+<TextureAtlas imagePath="texture-atlas-01-base.png">
+    <SubTexture name="airborne" x="2" y="2" width="137" height="140"/>
+    <SubTexture name="pig" x="2" y="144" width="191" height="182"/>
+</TextureAtlas>

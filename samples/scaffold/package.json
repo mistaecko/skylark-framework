@@ -1,0 +1,26 @@
+{
+  "name": "skylark-scaffold",
+  "title": "Scaffold for the Skylark Framework",
+  "homepage": "http://skylark-framework.org",
+  "description": "",
+  "private": true,
+  "readme": " ",
+  "readmeFilename": "README.md",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "~0.9.1-1",
+    "skylark": "https://github.com/mistaecko/skylark-framework/tarball/master/skylark",
+    "skylark-tools": "https://github.com/mistaecko/skylark-framework/tarball/master/skylark-tools",
+    "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
+    "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
+    "uglify-js": "~2.4.0",
+    "grunt": "*",
+    "grunt-closure-tools": "~0.8.3",
+    "grunt-cli": "*",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}

@@ -1,0 +1,126 @@
+#!/usr/bin/env node
+
+var cli  = require('commander'),
+    path = require('path'),
+    As2ts = require('./as2ts'),
+    base64 = require('./base64'),
+    ToImport = require('./toimport'),
+    ToFlat = require('./toflat').ToFlat,
+    ToFlatUsage = require('./toflat').ToFlatUsage,
+    fs = require('fs');
+
+cli
+    .version('0.0.2')
+    .usage('[action] [options]')
+
+    .command('base64 <file>')
+    .description('Encode a file in base64')
+    .action(function(file) {
+        console.log('[base64]');
+        var p = path.resolve(file);
+
+        if(!fs.existsSync(p))
+            throw new Error('Specified target file does not exists: ' + p);
+
+        base64(p);
+
+        exit(0);
+    });
+
+cli
+    .command('test')
+    .action(function() {
+        console.log('[test]');
+    });
+cli
+    .command('as2ts <file>')
+    .description('Convert ActionScript to TypeScript')
+    .action(function(file) {
+        console.log('[as2ts]');
+        var p = path.resolve(file);
+
+        if(!fs.existsSync(p)) {
+            throw new Error('Specified target file does not exists: ' + p);
+        }
+        As2ts.convert(p);
+
+        exit(0);
+    });
+
+cli
+    .command('toimport <file>')
+    .description('Auto-import used classes')
+    .action(function(file) {
+        console.log('[toimport]');
+
+        if(file) {
+            ToImport.processFile(file);
+        } else {
+            ToImport.processDir();
+        }
+        exit(0);
+    });
+
+cli
+    .command('toflatusage <file>')
+    .description('Auto-import used classes')
+    .action(function(file) {
+        console.log('[toflatusage]');
+
+        if(file) {
+            if(!fs.existsSync(file))
+                throw new Error('Not a file: ' + file);
+            if(fs.statSync(file).isFile())
+                ToFlatUsage.processFile(file);
+            else
+                ToFlatUsage.processDir(file);
+        }
+        exit(0);
+    });
+
+cli
+    .command('toflat')
+    .description('Auto-import used classes')
+    .action(function(file) {
+        console.log('[toflat]');
+
+        if(file) {
+            if(!fs.existsSync(file))
+                throw new Error('Not a file: ' + file);
+            if(fs.statSync(file).isFile())
+                ToFlat.processFile(file);
+            else
+                ToFlat.processDir(file);
+        } else {
+            // default dir (skylark/src)
+            ToFlat.processDir();
+        }
+        exit(0);
+    });
+
+
+cli
+    .command('*')
+    .description('No action specified')
+    .action(function(env){
+        cli.help();
+    });
+
+cli
+    .parse(process.argv);
+
+
+//console.log(cli.action);
+//console.log(cli.command);
+
+function exit(code) {
+    if (process.stdout._pendingWriteReqs || process.stderr._pendingWriteReqs) {
+        process.nextTick(function() {
+            exit(code);
+        });
+    } else {
+        process.exit(code);
+    }
+}
+
+

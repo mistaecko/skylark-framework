@@ -1,0 +1,8 @@
+--sourcemap
+--declaration
+--removeComments
+--target ES5
+--module amd
+--sourceRoot "../src"
+--out build/skylark.js
+"src/_dependencies.ts"

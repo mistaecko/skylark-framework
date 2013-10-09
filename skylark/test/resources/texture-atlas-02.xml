@@ -1,0 +1,4 @@
+<TextureAtlas imagePath="texture-atlas-01-base.png">
+    <SubTexture name='ann' x='0' y='0' width='55.5' height='16'/>
+    <SubTexture name='bob' x='16' y='32' width='16' height='32'/>
+</TextureAtlas>

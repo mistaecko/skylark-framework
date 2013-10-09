@@ -1,0 +1,52 @@
+{
+  "name": "skylark",
+  "version": "0.0.6",
+  "title": "The Skylark Framework.",
+  "homepage": "http://skylark-framework.org",
+  "description": "A JavaScript/TypeScript 2D framework.",
+  "author": {
+    "name": "Gamua OG, Austria"
+  },
+  "contributors": [
+    {
+      "name": "Werner Loibl",
+      "email": "werner.loibl@gmail.com",
+      "url": "http://gamua.com"
+    },
+    {
+      "name": "Daniel Sperl",
+      "email": "daniel.sperl@gamua.com",
+      "url": "http://gamua.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamua/skylark.git"
+  },
+  "license": {
+    "type": "MIT",
+    "url": ""
+  },
+  "readme": " ",
+  "readmeFilename": "README.md",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "~0.9.1-1",
+    "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
+    "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
+    "uglify-js": "~2.4.0",
+    "mocha": "*",
+    "chai": "*",
+    "should": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-copy": "*",
+    "grunt-closure-tools": "~0.8.3",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}

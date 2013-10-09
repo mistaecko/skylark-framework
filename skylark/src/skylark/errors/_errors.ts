@@ -1,0 +1,9 @@
+/// <reference path="ErrorImpl.ts"/>
+/// <reference path="DefaultError.ts"/>
+/// <reference path="AbstractClassError.ts"/>
+/// <reference path="AbstractMethodError.ts"/>
+/// <reference path="ArgumentError.ts"/>
+/// <reference path="IllegalOperationError.ts"/>
+/// <reference path="IllegalSystemStateError.ts"/>
+/// <reference path="MissingContextError.ts"/>
+/// <reference path="InvalidXmlError.ts"/>

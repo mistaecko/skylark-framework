@@ -1,0 +1,53 @@
+{
+  "name": "skylark-tools",
+  "version": "0.0.3",
+  "description": "A suite of supporting command-line tools and Grunt tasks for the Skylark Framework",
+  "author": {
+    "name": "Werner Loibl"
+  },
+  "contributors": [
+    {
+      "name": "Werner Loibl",
+      "email": "werner@gamua.com",
+      "url": "https://twitter.com/mistaecko"
+    }
+  ],
+  "main": "./index.js",
+  "license": {
+    "type": "BSD",
+    "url": "https://github.com/mistaecko/skylark-tools/blob/master/LICENSE-BSD"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mistaecko/skylark-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mistaecko/skylark-tools/issues"
+  },
+  "bin": {
+    "skt": "./bin/skt"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "dependencies": {
+    "commander": "*"
+  },
+  "peerDependencies": {
+    "source-map": "~0.1.30"
+  },
+  "devDependencies": {
+    "typescript": "~0.9.1-1",
+    "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
+    "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
+    "mocha": "*",
+    "chai": "*",
+    "should": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "fake-fs": "*",
+    "mocks": "*"
+  },
+  "readme": " ",
+  "readmeFilename": "README.md"
+}

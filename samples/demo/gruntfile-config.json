@@ -1,0 +1,6 @@
+{
+    "skylarkRepoDir": "../../skylark",
+    "skylarkFsDir": "../../skylark/build",
+    "skylarkFsSrcDir": "../../skylark/src",
+    "enableSkylarkHotLinking": false
+}

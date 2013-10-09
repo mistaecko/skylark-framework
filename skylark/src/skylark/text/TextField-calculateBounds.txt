@@ -1,0 +1,29 @@
+
+//        calculateBounds(canvas, bounds:Rectangle):Rectangle {
+//            var width = canvas.width;
+//            var height = canvas.height;
+//            var len = width * height;
+//            var imageData = canvas.getImageData(0, 0, width, height).data;
+//            var top:number = height;
+//            var left:number = width;
+//            var right:number = 0;
+//            var bottom:number = 0;
+//
+//            // top left
+//            var empty:bool;
+//            var idx:number;
+//            var done:bool;
+//            for(var y = 0; y < height && !done; y++) {
+//                for(var x = 0; x < width && !done; x++) {
+//                    idx = y * width + x;
+//                    empty = imageData[idx] === 0 && imageData[idx+1] === 0 && imageData[idx+2] === 0;
+//                    if(!empty) {
+//                        if(y < top)
+//                            top = y;
+//                        if(x < left)
+//                            left = x;
+//                        done = top <= y && left <= x;
+//                    }
+//                }
+//            }
+//        }

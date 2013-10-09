@@ -1,0 +1,47 @@
+{
+  "name": "skylark-demo",
+  "title": "Demo for the Skylark Framework",
+  "homepage": "http://skylark-framework.org",
+  "description": "",
+  "private": true,
+  "author": {
+    "name": "Gamua OG, Austria"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gamua/skylark-demo.git"
+  },
+  "contributors": [
+    {
+      "name": "Werner Loibl",
+      "email": "werner.loibl@gmail.com",
+      "url": ""
+    },
+    {
+      "name": "Daniel Sperl",
+      "email": "daniel.sperl@gamua.com",
+      "url": "http://gamua.com"
+    }
+  ],
+  "license": {
+    "type": "BSD",
+    "url": "https://github.com/mistaecko/grunt-ts/tarball/master/samples/demo/LICENSE-BSD"
+  },
+  "readme": " ",
+  "readmeFilename": "README.md",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "~0.9.1-1",
+    "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
+    "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
+    "uglify-js": "~2.4.0",
+    "grunt": "*",
+    "grunt-closure-tools": "~0.8.3",
+    "grunt-cli": "*",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}

@@ -1,0 +1,23 @@
+tmp.*
+tmp/
+
+
+node_modules/
+
+src/_dependencies.js
+src/_dependencies.js.map
+src/skylark.d.ts
+src/skylark.js
+src/skylark.js.map
+src/skylark/**/*.js
+src/skylark/**/*.js.map
+
+test/_dependencies.js
+test/_dependencies.js.map
+test/skylark/*.js
+test/skylark/*.js.map
+test/skylark/**/*.js
+test/skylark/**/*.js.map
+
+# OS X temporary folders
+.DS_Store

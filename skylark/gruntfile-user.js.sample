@@ -1,0 +1,7 @@
+module.exports = function(grunt) {
+    var config = grunt.config.data;
+    config.minifier = 'uglifyjs';
+    grunt.registerTask('magic', function() {
+        grunt.log.writeln('do magic');
+    });
+}
