@@ -11,7 +11,8 @@ var Server = function(config, app) {
     this.app = app;
 
     for(var key in config) {
-        this[key] = config[key];
+        if(config[key] != null)
+            this[key] = config[key];
     }
 }
 

@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         /**
          * @property {String} skylarkRepoDir
          */
-        skylarkRepoDir: 'node_modules/skylark/target/',
+        skylarkRepoDir: 'node_modules/skylark/',
 
         /**
          * @property {String} buildDir
@@ -227,7 +227,7 @@ module.exports = function(grunt) {
 
         'copy-skylark': {
             main: {
-                cwd: '<%= skylarkRepoDir %>/target',
+                cwd: '<%= skylarkRepoDir %>/release',
                 expand: true,
                 nonull: true,
                 src: [
@@ -301,7 +301,7 @@ module.exports = function(grunt) {
 
 
     // load minify, consolidate-sourcemaps tasks
-    grunt.loadTasks('../../util/skylark-tools/tasks/');
+    grunt.loadNpmTasks('skylark-tools');
     //grunt.loadNpmTasks('skylark-tools');
     grunt.renameTask('consolidate-sourcemaps', 'sourcemap');
 
@@ -327,7 +327,7 @@ module.exports = function(grunt) {
         }
         var config = grunt.config;
         var server = new Server({
-            port: config.get('serverPort'),
+            port: config.get('port'),
             enableSkylarkHotLinking: config.get('enableSkylarkHotLinking'),
             skylarkUri: config.get('skylarkUri'),
             skylarkFsDir: config.get('skylarkFsDir'),
@@ -350,6 +350,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('help', 'Show this information', function() {
         grunt.log.writeln('Commands:');
+        grunt.log.writeln('  dist');
+        grunt.log.writeln('  server');
         grunt.log.writeln('  compile[src|test|dist]');
         grunt.log.writeln('  watch:compile[:all|src]');
     });

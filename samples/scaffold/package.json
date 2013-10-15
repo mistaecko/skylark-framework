@@ -9,8 +9,8 @@
   "dependencies": {},
   "devDependencies": {
     "typescript": "~0.9.1-1",
-    "skylark": "https://github.com/mistaecko/skylark-framework/tarball/master/skylark",
-    "skylark-tools": "https://github.com/mistaecko/skylark-framework/tarball/master/skylark-tools",
+    "skylark": "http://gamua.com/skylark-framework/npm/skylark.tar.gz",
+    "skylark-tools": "http://gamua.com/skylark-framework/npm/skylark-tools.tar.gz",
     "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
     "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
     "uglify-js": "~2.4.0",
@@ -21,6 +21,7 @@
     "grunt-contrib-uglify": "~0.2.4",
     "grunt-contrib-concat": "*",
     "grunt-contrib-copy": "*",
-    "grunt-contrib-clean": "~0.5.0"
+    "grunt-contrib-clean": "~0.5.0",
+    "express": "*"
   }
 }
