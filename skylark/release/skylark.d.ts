@@ -1,4 +1,4 @@
-/// <reference path="../src/_externals.d.ts" />
+
 interface Dictionary {
     [s: string]: any;
 }
