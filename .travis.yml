@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - '0.10'
 install:
+  - cd skylark
   - npm install -g testem
   - npm install -g test/sauce
   - npm install
