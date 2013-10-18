@@ -7,6 +7,9 @@ install:
   - npm install -g test/sauce
   - npm install
 before_script:
+  - grunt setup
+  - grunt dist
+  - grunt compile:test
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
