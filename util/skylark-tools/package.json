@@ -31,11 +31,11 @@
     "test": "mocha test"
   },
   "dependencies": {
+    "source-map": "~0.1.30",
+    "send": "*",
     "commander": "*"
   },
   "peerDependencies": {
-    "source-map": "~0.1.30",
-    "send": "*"
   },
   "devDependencies": {
     "typescript": "~0.9.1-1",
