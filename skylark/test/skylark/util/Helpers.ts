@@ -22,6 +22,8 @@
 
 module util {
 
+    import _Bitmap = skylark.Bitmap;
+
     export class Helpers {
 
         public static E:number = 0.001;
@@ -113,7 +115,7 @@ module util {
 
         public static installCleanup(suite:any) {
             suite.afterEach(function() {
-                Helpers.cleanup((<any>this).currentTest);
+                Helpers.cleanup(this.test);
                 Helpers.resetStageDefaults();
             });
         }
@@ -336,7 +338,7 @@ module util {
             for(var i = 0; i < height; i++)
                 rows.push(row);
 
-            return Bitmap.create(rows, 1.0);
+            return _Bitmap.create(rows, 1.0);
         }
 
         public static createBitmapImg(width:number, height:number, color:number):JQueryPromise {
