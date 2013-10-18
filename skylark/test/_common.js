@@ -37,7 +37,7 @@
     var skylark, chai, Helpers, sinon;
 
     if(isCommonJs) {
-        skylark = require('../target/skylark');
+        skylark = require('../build/skylark');
         sinon = require('sinon');
         chai = require('chai');
         chai.use(require('sinon-chai'));

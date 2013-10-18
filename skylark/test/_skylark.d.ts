@@ -5,4 +5,4 @@
 
 // link to definition files instead of sources
 /// <reference path="../src/_externals.d.ts"/>
-/// <reference path="../target/skylark.d.ts"/>
+/// <reference path="../build/skylark.d.ts"/>
