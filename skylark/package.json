@@ -8,8 +8,7 @@
   "contributors": [
     {
       "name": "Werner 'Sam' Loibl",
-      "email": "mistaecko@gmail.com",
-      "url": "http://gamua.com"
+      "email": "mistaecko@gmail.com"
     }
   ],
   "repository": {
@@ -19,6 +18,9 @@
   "license": "BSD",
   "readme": " ",
   "readmeFilename": "README.md",
+  "scripts": {
+    "test": "testem ci -l Firefox"
+  },
   "dependencies": {
   },
   "devDependencies": {
@@ -26,7 +28,7 @@
     "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
     "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
     "uglify-js": "~2.4.0",
-    "mocha": "*",
+    "mocha": "~1.13.0",
     "chai": "*",
     "should": "*",
     "sinon": "*",
