@@ -82,6 +82,24 @@
 
 })(typeof global !== 'undefined' ? global : this);
 
+// provide skipIfFirefox.it()
+(function(global) {
+    global.skipIfFirefox = (function skipIfFirefox() {
+        console.log(navigator.userAgent);
+        var itFn;
+        if(!navigator.userAgent.match(/Gecko\//i)) {
+            itFn = it;
+        } else {
+            itFn = function(descr, fn) {
+                it.skip(descr + ' [NOFIREFOX]', fn);
+            };
+        }
+
+        return { it: itFn };
+    })();
+
+})(typeof global !== 'undefined' ? global : this);
+
 /**
  * 'Testem' patch to log the Assertion stacktrace of failed tests
  * to the console.
@@ -121,5 +139,4 @@
                 console.log.apply(this, arguments);
             }
     }
-})()
-
+})();

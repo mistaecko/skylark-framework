@@ -1,7 +1,7 @@
 /// <reference path="../../_harness.d.ts"/>
 require('../../_common.js');
 
-describe('Button', function() {
+describe.only('Button', function() {
     var up:skylark.Texture;
     var down:skylark.Texture;
 
@@ -80,16 +80,16 @@ describe('Button', function() {
         Helpers.assertImage(root, this, 'test/resources/buttons-with-text-' + font.toLowerCase() + '.png', done);
     }
 
-    it('should render a button with TrueType text', function(done) {
+    skipIfFirefox.it('should render a button with TrueType text', function(done) {
         renderButtonWithText.call(this, 'Arial', done);
     });
-    it('should render two buttons with different TrueType text', function(done) {
+    skipIfFirefox.it('should render two buttons with different TrueType text', function(done) {
         renderTwoButtonsWithText.call(this, 'Arial', done);
     });
-    it('should render a button with Bitmap text', function(done) {
+    skipIfFirefox.it('should render a button with Bitmap text', function(done) {
         renderButtonWithText.call(this, 'mini', done);
     });
-    it('should render two buttons with different Bitmap text', function(done) {
+    skipIfFirefox.it('should render two buttons with different Bitmap text', function(done) {
         renderTwoButtonsWithText.call(this, 'mini', done);
     });
 

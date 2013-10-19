@@ -9,3 +9,4 @@ declare var isBrowser;
 declare var isNode;
 declare var isCommonJs;
 
+declare var skipIfFirefox:{ it:itDef };
