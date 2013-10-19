@@ -1,7 +1,7 @@
 /// <reference path="../../_harness.d.ts"/>
 require('../../_common.js');
 
-describe.only('Button', function() {
+describe('Button', function() {
     var up:skylark.Texture;
     var down:skylark.Texture;
 
@@ -20,7 +20,7 @@ describe.only('Button', function() {
     });
 
     // problems with skylark.Skylark background color remains from other test!?
-    it('should render with the "up" texture', function(done) {
+    skipIfFirefox.it('should render with the "up" texture', function(done) {
         var button = new skylark.Button(up);
         Helpers.assertImage(button, this,'test/resources/button.png', done);
     });

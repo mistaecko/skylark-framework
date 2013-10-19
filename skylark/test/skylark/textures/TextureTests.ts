@@ -30,14 +30,14 @@ describe('TextureTests', function() {
     }
 
     describe('empty', function() {
-        it('should create an empty texture', function(done) {
+        skipIfFirefox.it('should create an empty texture', function(done) {
             var texture = Texture.empty(64, 64, true, true, false, 1);
             // note: the stage is cleared in transparent black, but the image obtained from
             // the canvas will be white - todo verify
             Helpers.assertImage(texture,this, 'test/resources/64x64white.png', done);
         });
 
-        it('should use the global "scale" factor if none is specified', function() {
+        skipIfFirefox.it('should use the global "scale" factor if none is specified', function() {
             // todo remove once IntelliJ has become smarter
             var /*IntelliJ*/Object:any = (<any>window).Object;
 
@@ -56,7 +56,7 @@ describe('TextureTests', function() {
         });
     });
 
-    describe('fromXxx', function() {
+    skipIfFirefox.describe('fromXxx', function() {
 
         it('should create a texture from a canvas', function(done) {
             var width = 64;
