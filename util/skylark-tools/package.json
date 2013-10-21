@@ -1,6 +1,6 @@
 {
   "name": "skylark-tools",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "A suite of supporting command-line tools and Grunt tasks for the Skylark Framework",
   "author": {
     "name": "Werner Loibl"
@@ -8,21 +8,21 @@
   "contributors": [
     {
       "name": "Werner Loibl",
-      "email": "werner@gamua.com",
+      "email": "mistaecko@gmail.com",
       "url": "https://twitter.com/mistaecko"
     }
   ],
   "main": "./index.js",
   "license": {
     "type": "BSD",
-    "url": "https://github.com/mistaecko/skylark-tools/blob/master/LICENSE-BSD"
+    "url": "https://github.com/mistaecko/skylark/blob/master/LICENSE-BSD"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mistaecko/skylark-tools.git"
+    "url": "https://github.com/mistaecko/skylark.git"
   },
   "bugs": {
-    "url": "https://github.com/mistaecko/skylark-tools/issues"
+    "url": "https://github.com/mistaecko/skylark/issues"
   },
   "bin": {
     "skt": "./bin/skt"
@@ -39,8 +39,6 @@
   },
   "devDependencies": {
     "typescript": "~0.9.1-1",
-    "grunt-ts": "https://github.com/mistaecko/grunt-ts/tarball/master",
-    "concat-sourcemaps": "https://github.com/mistaecko/concat-sourcemaps/tarball/master",
     "mocha": "*",
     "chai": "*",
     "should": "*",
