@@ -12,8 +12,12 @@ serve_files:
   - lib/jquery/1.9.1/jquery-1.9.1.js
   - lib/jquery/jquery.simulate.js
   - lib/js-imagediff/1.0.3/imagediff.js
-  - target/skylark.js
+  - build/skylark.js
   - test/_common.js
   - test/skylark-compiled/util/Helpers.js
   - test/skylark-compiled/util/Stubs.js
   - test/skylark-compiled/**/*Tests.js
+launchers:
+    SL_Chrome:
+        command: sauce --browserNameSL="chrome" --versionSL="" --platformSL="Linux"
+launch_in_ci: [Firefox, Chrome]

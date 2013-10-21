@@ -64,7 +64,7 @@ describe('BitmapFont', function() {
             skylark.Skylark.stageDefaults.backgroundColor = null;
         });
 
-        it('should create the "Mini" BitmapFont when constructor is called without args', function() {
+        skipIfFirefox.it('should create the "Mini" BitmapFont when constructor is called without args', function() {
             var font:any = new skylark.BitmapFont();
             var mini:any = new skylark.MiniBitmapFont();
             expect(font.mTexture).to.eql(mini.mTexture);
@@ -87,7 +87,7 @@ describe('BitmapFont', function() {
             // with two empty pixel rows above, and one row below the letter pixels
 
 
-            it('should center a single letter horizontally and vertically', function(done) {
+            skipIfFirefox.it('should center a single letter horizontally and vertically', function(done) {
                 var sprite = font.createSprite(15, 18, 'K');
                 Helpers.assertImage(sprite, this, 'test/resources/mini-15x18-K-centered.png', done);
             });
@@ -99,11 +99,11 @@ describe('BitmapFont', function() {
                 var sprite = font.createSprite(15, 18, 'K', font.size, 0xffffff, 'right', skylark.VAlign.MIDDLE);
                 Helpers.assertImage(sprite, this, 'test/resources/mini-15x18-K-right-center.png', done);
             });
-            it('should align vertically top', function(done) {
+            skipIfFirefox.it('should align vertically top', function(done) {
                 var sprite = font.createSprite(15, 18, 'K', font.size, 0xffffff, skylark.HAlign.CENTER, 'top');
                 Helpers.assertImage(sprite, this, 'test/resources/mini-15x18-K-center-top.png', done);
             });
-            it('should align vertically bottom', function(done) {
+            skipIfFirefox.it('should align vertically bottom', function(done) {
                 var sprite = font.createSprite(15, 18, 'K', font.size, 0xffffff, skylark.HAlign.CENTER, 'bottom');
                 Helpers.assertImage(sprite, this, 'test/resources/mini-15x18-K-center-bottom.png', done);
             });

@@ -1,3 +1,6 @@
+/// <reference path="Bitmap.ts"/>
+/// <reference path="PxLoader.ts"/>
+
 /// <reference path="ClassUtil.ts"/>
 /// <reference path="StringUtil.ts"/>
 /// <reference path="Arguments.ts"/>
@@ -12,8 +15,6 @@
 /// <reference path="VAlign.ts"/>
 /// <reference path="BitmapData.ts"/>
 
-/// <reference path="Bitmap.ts"/>
-/// <reference path="PxLoader.ts"/>
 /// <reference path="AssetManager.ts"/>
 /// <reference path="PxLoaderAssetManager.ts"/>
 

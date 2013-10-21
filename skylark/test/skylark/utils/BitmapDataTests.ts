@@ -48,7 +48,7 @@ describe('BitmapData', function() {
             }).done(()=> done());
         });
 
-        it('should convert a HTMLImageElement to a base64-encoded dataURL', function() {
+        skipIfFirefox.it('should convert a HTMLImageElement to a base64-encoded dataURL', function() {
             var string = skylark.BitmapData.toDataURL(image);
             expect(string).to.eql('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2P8z8DwHwAFBQIAHl6u2QAAAABJRU5ErkJggg==');
         });

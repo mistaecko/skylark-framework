@@ -20,12 +20,12 @@ describe('Button', function() {
     });
 
     // problems with skylark.Skylark background color remains from other test!?
-    it('should render with the "up" texture', function(done) {
+    skipIfFirefox.it('should render with the "up" texture', function(done) {
         var button = new skylark.Button(up);
         Helpers.assertImage(button, this,'test/resources/button.png', done);
     });
 
-    it('should render the "down" texture when pressed', function(done) {
+    it.skip('should render the "down" texture when pressed', function(done) {
         var button = new skylark.Button(up, down);
 
         skylark.Skylark.buffered = false;
@@ -80,16 +80,16 @@ describe('Button', function() {
         Helpers.assertImage(root, this, 'test/resources/buttons-with-text-' + font.toLowerCase() + '.png', done);
     }
 
-    it('should render a button with TrueType text', function(done) {
+    skipIfFirefox.it('should render a button with TrueType text', function(done) {
         renderButtonWithText.call(this, 'Arial', done);
     });
-    it('should render two buttons with different TrueType text', function(done) {
+    skipIfFirefox.it('should render two buttons with different TrueType text', function(done) {
         renderTwoButtonsWithText.call(this, 'Arial', done);
     });
-    it('should render a button with Bitmap text', function(done) {
+    skipIfFirefox.it('should render a button with Bitmap text', function(done) {
         renderButtonWithText.call(this, 'mini', done);
     });
-    it('should render two buttons with different Bitmap text', function(done) {
+    skipIfFirefox.it('should render two buttons with different Bitmap text', function(done) {
         renderTwoButtonsWithText.call(this, 'mini', done);
     });
 

@@ -6,7 +6,7 @@ describe('TouchMarker', function() {
 
     Helpers.manageStarling(this); // make sure everything is cleaned up properly
 
-    it('should draw the texture', function(done) {
+    skipIfFirefox.it('should draw the texture', function(done) {
         var tm = new TouchMarker();
 
         // position touch marker on the canvas

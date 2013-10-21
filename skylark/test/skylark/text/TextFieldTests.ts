@@ -82,7 +82,7 @@ describe('TextField', function() {
     });
 
     describe('Truetype fonts', function() {
-        it('should render in a single line [left,top]', function(done) {
+        skipIfFirefox.it('should render in a single line [left,top]', function(done) {
             var textfield = new skylark.TextField(100, 50, 'Kaboom', 'Arial', 16, 0x000000);
             textfield.hAlign = skylark.HAlign.LEFT;
             textfield.vAlign = skylark.VAlign.TOP;
