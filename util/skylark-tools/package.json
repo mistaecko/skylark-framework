@@ -1,7 +1,7 @@
 {
   "name": "skylark-tools",
   "version": "0.0.6",
-  "description": "A suite of supporting command-line tools and Grunt tasks for the Skylark Framework",
+  "description": "A suite of supporting command-line tools and Grunt tasks for The Skylark Framework",
   "author": {
     "name": "Werner Loibl"
   },
@@ -15,14 +15,14 @@
   "main": "./index.js",
   "license": {
     "type": "BSD",
-    "url": "https://github.com/mistaecko/skylark/blob/master/LICENSE-BSD"
+    "url": "https://github.com/mistaecko/skylark-framework/blob/master/LICENSE-BSD"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mistaecko/skylark.git"
+    "url": "https://github.com/mistaecko/skylark-framework.git"
   },
   "bugs": {
-    "url": "https://github.com/mistaecko/skylark/issues"
+    "url": "https://github.com/mistaecko/skylark-framework/issues"
   },
   "bin": {
     "skt": "./bin/skt"
