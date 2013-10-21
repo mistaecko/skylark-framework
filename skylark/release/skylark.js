@@ -3017,6 +3017,504 @@ var skylark;
 })(skylark || (skylark = {}));
 var skylark;
 (function (skylark) {
+    var _asLittleEndianHex = function (value, bytes) {
+        var result = [];
+
+        for (; bytes > 0; bytes--) {
+            result.push(String.fromCharCode(value & 255));
+            value >>= 8;
+        }
+
+        return result.join('');
+    };
+
+    var _collapseData = function (rows, row_padding) {
+        var i, rows_len = rows.length, j, pixels_len = rows_len ? rows[0].length : 0, pixel, padding = '', result = [];
+
+        for (; row_padding > 0; row_padding--) {
+            padding += '\x00';
+        }
+
+        for (i = 0; i < rows_len; i++) {
+            for (j = 0; j < pixels_len; j++) {
+                pixel = rows[i][j];
+                result.push(String.fromCharCode(pixel[2]) + String.fromCharCode(pixel[1]) + String.fromCharCode(pixel[0]));
+            }
+            result.push(padding);
+        }
+
+        return result.join('');
+    };
+
+    var _scaleRows = function (rows, scale) {
+        var real_w = rows.length, scaled_w = parseInt(String(real_w * scale)), real_h = real_w ? rows[0].length : 0, scaled_h = parseInt(String(real_h * scale)), new_rows = [], new_row, x, y;
+
+        for (y = 0; y < scaled_h; y++) {
+            new_rows.push(new_row = []);
+            for (x = 0; x < scaled_w; x++) {
+                new_row.push(rows[parseInt(String(y / scale))][parseInt(String(x / scale))]);
+            }
+        }
+        return new_rows;
+    };
+
+    var Bitmap = (function () {
+        function Bitmap() {
+        }
+        Bitmap.create = function (rows, scale) {
+            if (!window.btoa) {
+                console.log('Oh no, your browser does not support base64 encoding - window.btoa()!!');
+                return false;
+            }
+
+            scale = scale || 1;
+            if (scale != 1) {
+                rows = _scaleRows(rows, scale);
+            }
+
+            var height = rows.length, width = height ? rows[0].length : 0, row_padding = (4 - (width * 3) % 4) % 4, num_data_bytes = (width * 3 + row_padding) * height, num_file_bytes = 54 + num_data_bytes, file;
+
+            height = _asLittleEndianHex(height, 4);
+            width = _asLittleEndianHex(width, 4);
+            num_data_bytes = _asLittleEndianHex(num_data_bytes, 4);
+            num_file_bytes = _asLittleEndianHex(num_file_bytes, 4);
+
+            file = ('BM' + num_file_bytes + '\x00\x00' + '\x00\x00' + '\x36\x00\x00\x00' + '\x28\x00\x00\x00' + width + height + '\x01\x00' + '\x18\x00' + '\x00\x00\x00\x00' + num_data_bytes + '\x13\x0B\x00\x00' + '\x13\x0B\x00\x00' + '\x00\x00\x00\x00' + '\x00\x00\x00\x00' + _collapseData(rows, row_padding));
+
+            return 'data:image/bmp;base64,' + btoa(file);
+        };
+        return Bitmap;
+    })();
+    skylark.Bitmap = Bitmap;
+})(skylark || (skylark = {}));
+((function (global) {
+    function PxLoader(settings) {
+        settings = settings || {};
+        this.settings = settings;
+
+        if (settings.statusInterval == null) {
+            settings.statusInterval = 5000;
+        }
+
+        if (settings.loggingDelay == null) {
+            settings.loggingDelay = 20 * 1000;
+        }
+
+        if (settings.noProgressTimeout == null) {
+            settings.noProgressTimeout = Infinity;
+        }
+
+        var entries = [], progressListeners = [], timeStarted, progressChanged = Date.now();
+
+        var ResourceState = {
+            QUEUED: 0,
+            WAITING: 1,
+            LOADED: 2,
+            ERROR: 3,
+            TIMEOUT: 4
+        };
+
+        var ensureArray = function (val) {
+            if (val == null) {
+                return [];
+            }
+
+            if (Array.isArray(val)) {
+                return val;
+            }
+
+            return [val];
+        };
+
+        this.add = function (resource) {
+            resource.tags = new PxLoaderTags(resource.tags);
+
+            if (resource.priority == null) {
+                resource.priority = Infinity;
+            }
+
+            entries.push({
+                resource: resource,
+                status: ResourceState.QUEUED
+            });
+        };
+
+        this.addProgressListener = function (callback, tags) {
+            progressListeners.push({
+                callback: callback,
+                tags: new PxLoaderTags(tags)
+            });
+        };
+
+        this.addCompletionListener = function (callback, tags) {
+            progressListeners.push({
+                tags: new PxLoaderTags(tags),
+                callback: function (e) {
+                    if (e.completedCount === e.totalCount) {
+                        callback(e);
+                    }
+                }
+            });
+        };
+
+        var getResourceSort = function (orderedTags) {
+            orderedTags = ensureArray(orderedTags);
+            var getTagOrder = function (entry) {
+                var resource = entry.resource, bestIndex = Infinity;
+                for (var i = 0; i < resource.tags.length; i++) {
+                    for (var j = 0; j < Math.min(orderedTags.length, bestIndex); j++) {
+                        if (resource.tags.all[i] === orderedTags[j] && j < bestIndex) {
+                            bestIndex = j;
+                            if (bestIndex === 0) {
+                                break;
+                            }
+                        }
+                        if (bestIndex === 0) {
+                            break;
+                        }
+                    }
+                }
+                return bestIndex;
+            };
+            return function (a, b) {
+                var aOrder = getTagOrder(a), bOrder = getTagOrder(b);
+                if (aOrder < bOrder) {
+                    return -1;
+                }
+                if (aOrder > bOrder) {
+                    return 1;
+                }
+
+                if (a.priority < b.priority) {
+                    return -1;
+                }
+                if (a.priority > b.priority) {
+                    return 1;
+                }
+                return 0;
+            };
+        };
+
+        this.start = function (orderedTags) {
+            timeStarted = Date.now();
+
+            var compareResources = getResourceSort(orderedTags);
+            entries.sort(compareResources);
+
+            for (var i = 0, len = entries.length; i < len; i++) {
+                var entry = entries[i];
+                entry.status = ResourceState.WAITING;
+                entry.resource.start(this);
+            }
+
+            setTimeout(statusCheck, 100);
+        };
+
+        var statusCheck = function () {
+            var checkAgain = false, noProgressTime = Date.now() - progressChanged, timedOut = (noProgressTime >= settings.noProgressTimeout), shouldLog = (noProgressTime >= settings.loggingDelay);
+
+            for (var i = 0, len = entries.length; i < len; i++) {
+                var entry = entries[i];
+                if (entry.status !== ResourceState.WAITING) {
+                    continue;
+                }
+
+                if (entry.resource.checkStatus) {
+                    entry.resource.checkStatus();
+                }
+
+                if (entry.status === ResourceState.WAITING) {
+                    if (timedOut) {
+                        entry.resource.onTimeout();
+                    } else {
+                        checkAgain = true;
+                    }
+                }
+            }
+
+            if (shouldLog && checkAgain) {
+                log();
+            }
+
+            if (checkAgain) {
+                setTimeout(statusCheck, settings.statusInterval);
+            }
+        };
+
+        this.isBusy = function () {
+            for (var i = 0, len = entries.length; i < len; i++) {
+                if (entries[i].status === ResourceState.QUEUED || entries[i].status === ResourceState.WAITING) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        var onProgress = function (resource, statusType) {
+            var entry = null, i, len, numResourceTags, listener, shouldCall;
+
+            for (i = 0, len = entries.length; i < len; i++) {
+                if (entries[i].resource === resource) {
+                    entry = entries[i];
+                    break;
+                }
+            }
+
+            if (entry == null || entry.status !== ResourceState.WAITING) {
+                return;
+            }
+            entry.status = statusType;
+            progressChanged = Date.now();
+
+            numResourceTags = resource.tags.length;
+
+            for (i = 0, len = progressListeners.length; i < len; i++) {
+                listener = progressListeners[i];
+                if (listener.tags.length === 0) {
+                    shouldCall = true;
+                } else {
+                    shouldCall = resource.tags.intersects(listener.tags);
+                }
+
+                if (shouldCall) {
+                    sendProgress(entry, listener);
+                }
+            }
+        };
+
+        this.onLoad = function (resource) {
+            onProgress(resource, ResourceState.LOADED);
+        };
+        this.onError = function (resource) {
+            onProgress(resource, ResourceState.ERROR);
+        };
+        this.onTimeout = function (resource) {
+            onProgress(resource, ResourceState.TIMEOUT);
+        };
+
+        var sendProgress = function (updatedEntry, listener) {
+            var completed = 0, total = 0, i, len, entry, includeResource;
+            for (i = 0, len = entries.length; i < len; i++) {
+                entry = entries[i];
+                includeResource = false;
+
+                if (listener.tags.length === 0) {
+                    includeResource = true;
+                } else {
+                    includeResource = entry.resource.tags.intersects(listener.tags);
+                }
+
+                if (includeResource) {
+                    total++;
+                    if (entry.status === ResourceState.LOADED || entry.status === ResourceState.ERROR || entry.status === ResourceState.TIMEOUT) {
+                        completed++;
+                    }
+                }
+            }
+
+            listener.callback({
+                resource: updatedEntry.resource,
+                loaded: (updatedEntry.status === ResourceState.LOADED),
+                error: (updatedEntry.status === ResourceState.ERROR),
+                timeout: (updatedEntry.status === ResourceState.TIMEOUT),
+                completedCount: completed,
+                totalCount: total
+            });
+        };
+
+        var log = this.log = function (showAll) {
+            if (!window.console) {
+                return;
+            }
+
+            var elapsedSeconds = Math.round((Date.now() - timeStarted) / 1000);
+            window.console.log('PxLoader elapsed: ' + elapsedSeconds + ' sec');
+
+            for (var i = 0, len = entries.length; i < len; i++) {
+                var entry = entries[i];
+                if (!showAll && entry.status !== ResourceState.WAITING) {
+                    continue;
+                }
+
+                var message = 'PxLoader: #' + i + ' ' + entry.resource.getName();
+                switch (entry.status) {
+                    case ResourceState.QUEUED:
+                        message += ' (Not Started)';
+                        break;
+                    case ResourceState.WAITING:
+                        message += ' (Waiting)';
+                        break;
+                    case ResourceState.LOADED:
+                        message += ' (Loaded)';
+                        break;
+                    case ResourceState.ERROR:
+                        message += ' (Error)';
+                        break;
+                    case ResourceState.TIMEOUT:
+                        message += ' (Timeout)';
+                        break;
+                }
+
+                if (entry.resource.tags.length > 0) {
+                    message += ' Tags: [' + entry.resource.tags.all.join(',') + ']';
+                }
+
+                window.console.log(message);
+            }
+        };
+    }
+
+    function PxLoaderTags(values) {
+        this.all = [];
+        this.first = null;
+        this.length = 0;
+
+        this.lookup = {};
+
+        if (values) {
+            if (Array.isArray(values)) {
+                this.all = values.slice(0);
+            } else if (typeof values === 'object') {
+                for (var key in values) {
+                    if (values.hasOwnProperty(key)) {
+                        this.all.push(key);
+                    }
+                }
+            } else {
+                this.all.push(values);
+            }
+
+            this.length = this.all.length;
+            if (this.length > 0) {
+                this.first = this.all[0];
+            }
+
+            for (var i = 0; i < this.length; i++) {
+                this.lookup[this.all[i]] = true;
+            }
+        }
+    }
+
+    PxLoaderTags.prototype.intersects = function (other) {
+        if (this.length === 0 || other.length === 0) {
+            return false;
+        }
+
+        if (this.length === 1 && other.length === 1) {
+            return this.first === other.first;
+        }
+
+        if (other.length < this.length) {
+            return other.intersects(this);
+        }
+
+        for (var key in this.lookup) {
+            if (other.lookup[key]) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    function PxLoaderImage(url, tags, priority) {
+        var self = this, loader = null;
+
+        this.img = new Image();
+        this.tags = tags;
+        this.priority = priority;
+
+        var onReadyStateChange = function () {
+            if (self.img.readyState === 'complete') {
+                removeEventHandlers();
+                loader.onLoad(self);
+            }
+        };
+
+        var onLoad = function () {
+            removeEventHandlers();
+            loader.onLoad(self);
+        };
+
+        var onError = function () {
+            removeEventHandlers();
+            loader.onError(self);
+        };
+
+        var removeEventHandlers = function () {
+            self.unbind('load', onLoad);
+            self.unbind('readystatechange', onReadyStateChange);
+            self.unbind('error', onError);
+        };
+
+        this.start = function (pxLoader) {
+            loader = pxLoader;
+
+            self.bind('load', onLoad);
+            self.bind('readystatechange', onReadyStateChange);
+            self.bind('error', onError);
+
+            self.img.src = url;
+        };
+
+        this.checkStatus = function () {
+            if (self.img.complete) {
+                removeEventHandlers();
+                loader.onLoad(self);
+            }
+        };
+
+        this.onTimeout = function () {
+            removeEventHandlers();
+            if (self.img.complete) {
+                loader.onLoad(self);
+            } else {
+                loader.onTimeout(self);
+            }
+        };
+
+        this.getName = function () {
+            return url;
+        };
+
+        this.bind = function (eventName, eventHandler) {
+            if (self.img.addEventListener) {
+                self.img.addEventListener(eventName, eventHandler, false);
+            } else if (self.img.attachEvent) {
+                self.img.attachEvent('on' + eventName, eventHandler);
+            }
+        };
+
+        this.unbind = function (eventName, eventHandler) {
+            if (self.img.removeEventListener) {
+                self.img.removeEventListener(eventName, eventHandler, false);
+            } else if (self.img.detachEvent) {
+                self.img.detachEvent('on' + eventName, eventHandler);
+            }
+        };
+    }
+
+    PxLoader.prototype.addImage = function (url, tags, priority) {
+        var imageLoader = new PxLoaderImage(url, tags, priority);
+        this.add(imageLoader);
+
+        return imageLoader.img;
+    };
+
+    global.PxLoader = PxLoader;
+    global.PxLoaderImage = PxLoaderImage;
+})(this));
+
+var PxResourceState;
+(function (PxResourceState) {
+    PxResourceState[PxResourceState["QUEUED"] = 0] = "QUEUED";
+    PxResourceState[PxResourceState["WAITING"] = 1] = "WAITING";
+    PxResourceState[PxResourceState["LOADED"] = 2] = "LOADED";
+    PxResourceState[PxResourceState["ERROR"] = 3] = "ERROR";
+    PxResourceState[PxResourceState["TIMEOUT"] = 4] = "TIMEOUT";
+})(PxResourceState || (PxResourceState = {}));
+var skylark;
+(function (skylark) {
     var ClassUtil = (function () {
         function ClassUtil() {
         }
@@ -4499,504 +4997,6 @@ var skylark;
     })();
     skylark.BitmapData = BitmapData;
 })(skylark || (skylark = {}));
-var skylark;
-(function (skylark) {
-    var _asLittleEndianHex = function (value, bytes) {
-        var result = [];
-
-        for (; bytes > 0; bytes--) {
-            result.push(String.fromCharCode(value & 255));
-            value >>= 8;
-        }
-
-        return result.join('');
-    };
-
-    var _collapseData = function (rows, row_padding) {
-        var i, rows_len = rows.length, j, pixels_len = rows_len ? rows[0].length : 0, pixel, padding = '', result = [];
-
-        for (; row_padding > 0; row_padding--) {
-            padding += '\x00';
-        }
-
-        for (i = 0; i < rows_len; i++) {
-            for (j = 0; j < pixels_len; j++) {
-                pixel = rows[i][j];
-                result.push(String.fromCharCode(pixel[2]) + String.fromCharCode(pixel[1]) + String.fromCharCode(pixel[0]));
-            }
-            result.push(padding);
-        }
-
-        return result.join('');
-    };
-
-    var _scaleRows = function (rows, scale) {
-        var real_w = rows.length, scaled_w = parseInt(String(real_w * scale)), real_h = real_w ? rows[0].length : 0, scaled_h = parseInt(String(real_h * scale)), new_rows = [], new_row, x, y;
-
-        for (y = 0; y < scaled_h; y++) {
-            new_rows.push(new_row = []);
-            for (x = 0; x < scaled_w; x++) {
-                new_row.push(rows[parseInt(String(y / scale))][parseInt(String(x / scale))]);
-            }
-        }
-        return new_rows;
-    };
-
-    var Bitmap = (function () {
-        function Bitmap() {
-        }
-        Bitmap.create = function (rows, scale) {
-            if (!window.btoa) {
-                console.log('Oh no, your browser does not support base64 encoding - window.btoa()!!');
-                return false;
-            }
-
-            scale = scale || 1;
-            if (scale != 1) {
-                rows = _scaleRows(rows, scale);
-            }
-
-            var height = rows.length, width = height ? rows[0].length : 0, row_padding = (4 - (width * 3) % 4) % 4, num_data_bytes = (width * 3 + row_padding) * height, num_file_bytes = 54 + num_data_bytes, file;
-
-            height = _asLittleEndianHex(height, 4);
-            width = _asLittleEndianHex(width, 4);
-            num_data_bytes = _asLittleEndianHex(num_data_bytes, 4);
-            num_file_bytes = _asLittleEndianHex(num_file_bytes, 4);
-
-            file = ('BM' + num_file_bytes + '\x00\x00' + '\x00\x00' + '\x36\x00\x00\x00' + '\x28\x00\x00\x00' + width + height + '\x01\x00' + '\x18\x00' + '\x00\x00\x00\x00' + num_data_bytes + '\x13\x0B\x00\x00' + '\x13\x0B\x00\x00' + '\x00\x00\x00\x00' + '\x00\x00\x00\x00' + _collapseData(rows, row_padding));
-
-            return 'data:image/bmp;base64,' + btoa(file);
-        };
-        return Bitmap;
-    })();
-    skylark.Bitmap = Bitmap;
-})(skylark || (skylark = {}));
-((function (global) {
-    function PxLoader(settings) {
-        settings = settings || {};
-        this.settings = settings;
-
-        if (settings.statusInterval == null) {
-            settings.statusInterval = 5000;
-        }
-
-        if (settings.loggingDelay == null) {
-            settings.loggingDelay = 20 * 1000;
-        }
-
-        if (settings.noProgressTimeout == null) {
-            settings.noProgressTimeout = Infinity;
-        }
-
-        var entries = [], progressListeners = [], timeStarted, progressChanged = Date.now();
-
-        var ResourceState = {
-            QUEUED: 0,
-            WAITING: 1,
-            LOADED: 2,
-            ERROR: 3,
-            TIMEOUT: 4
-        };
-
-        var ensureArray = function (val) {
-            if (val == null) {
-                return [];
-            }
-
-            if (Array.isArray(val)) {
-                return val;
-            }
-
-            return [val];
-        };
-
-        this.add = function (resource) {
-            resource.tags = new PxLoaderTags(resource.tags);
-
-            if (resource.priority == null) {
-                resource.priority = Infinity;
-            }
-
-            entries.push({
-                resource: resource,
-                status: ResourceState.QUEUED
-            });
-        };
-
-        this.addProgressListener = function (callback, tags) {
-            progressListeners.push({
-                callback: callback,
-                tags: new PxLoaderTags(tags)
-            });
-        };
-
-        this.addCompletionListener = function (callback, tags) {
-            progressListeners.push({
-                tags: new PxLoaderTags(tags),
-                callback: function (e) {
-                    if (e.completedCount === e.totalCount) {
-                        callback(e);
-                    }
-                }
-            });
-        };
-
-        var getResourceSort = function (orderedTags) {
-            orderedTags = ensureArray(orderedTags);
-            var getTagOrder = function (entry) {
-                var resource = entry.resource, bestIndex = Infinity;
-                for (var i = 0; i < resource.tags.length; i++) {
-                    for (var j = 0; j < Math.min(orderedTags.length, bestIndex); j++) {
-                        if (resource.tags.all[i] === orderedTags[j] && j < bestIndex) {
-                            bestIndex = j;
-                            if (bestIndex === 0) {
-                                break;
-                            }
-                        }
-                        if (bestIndex === 0) {
-                            break;
-                        }
-                    }
-                }
-                return bestIndex;
-            };
-            return function (a, b) {
-                var aOrder = getTagOrder(a), bOrder = getTagOrder(b);
-                if (aOrder < bOrder) {
-                    return -1;
-                }
-                if (aOrder > bOrder) {
-                    return 1;
-                }
-
-                if (a.priority < b.priority) {
-                    return -1;
-                }
-                if (a.priority > b.priority) {
-                    return 1;
-                }
-                return 0;
-            };
-        };
-
-        this.start = function (orderedTags) {
-            timeStarted = Date.now();
-
-            var compareResources = getResourceSort(orderedTags);
-            entries.sort(compareResources);
-
-            for (var i = 0, len = entries.length; i < len; i++) {
-                var entry = entries[i];
-                entry.status = ResourceState.WAITING;
-                entry.resource.start(this);
-            }
-
-            setTimeout(statusCheck, 100);
-        };
-
-        var statusCheck = function () {
-            var checkAgain = false, noProgressTime = Date.now() - progressChanged, timedOut = (noProgressTime >= settings.noProgressTimeout), shouldLog = (noProgressTime >= settings.loggingDelay);
-
-            for (var i = 0, len = entries.length; i < len; i++) {
-                var entry = entries[i];
-                if (entry.status !== ResourceState.WAITING) {
-                    continue;
-                }
-
-                if (entry.resource.checkStatus) {
-                    entry.resource.checkStatus();
-                }
-
-                if (entry.status === ResourceState.WAITING) {
-                    if (timedOut) {
-                        entry.resource.onTimeout();
-                    } else {
-                        checkAgain = true;
-                    }
-                }
-            }
-
-            if (shouldLog && checkAgain) {
-                log();
-            }
-
-            if (checkAgain) {
-                setTimeout(statusCheck, settings.statusInterval);
-            }
-        };
-
-        this.isBusy = function () {
-            for (var i = 0, len = entries.length; i < len; i++) {
-                if (entries[i].status === ResourceState.QUEUED || entries[i].status === ResourceState.WAITING) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        var onProgress = function (resource, statusType) {
-            var entry = null, i, len, numResourceTags, listener, shouldCall;
-
-            for (i = 0, len = entries.length; i < len; i++) {
-                if (entries[i].resource === resource) {
-                    entry = entries[i];
-                    break;
-                }
-            }
-
-            if (entry == null || entry.status !== ResourceState.WAITING) {
-                return;
-            }
-            entry.status = statusType;
-            progressChanged = Date.now();
-
-            numResourceTags = resource.tags.length;
-
-            for (i = 0, len = progressListeners.length; i < len; i++) {
-                listener = progressListeners[i];
-                if (listener.tags.length === 0) {
-                    shouldCall = true;
-                } else {
-                    shouldCall = resource.tags.intersects(listener.tags);
-                }
-
-                if (shouldCall) {
-                    sendProgress(entry, listener);
-                }
-            }
-        };
-
-        this.onLoad = function (resource) {
-            onProgress(resource, ResourceState.LOADED);
-        };
-        this.onError = function (resource) {
-            onProgress(resource, ResourceState.ERROR);
-        };
-        this.onTimeout = function (resource) {
-            onProgress(resource, ResourceState.TIMEOUT);
-        };
-
-        var sendProgress = function (updatedEntry, listener) {
-            var completed = 0, total = 0, i, len, entry, includeResource;
-            for (i = 0, len = entries.length; i < len; i++) {
-                entry = entries[i];
-                includeResource = false;
-
-                if (listener.tags.length === 0) {
-                    includeResource = true;
-                } else {
-                    includeResource = entry.resource.tags.intersects(listener.tags);
-                }
-
-                if (includeResource) {
-                    total++;
-                    if (entry.status === ResourceState.LOADED || entry.status === ResourceState.ERROR || entry.status === ResourceState.TIMEOUT) {
-                        completed++;
-                    }
-                }
-            }
-
-            listener.callback({
-                resource: updatedEntry.resource,
-                loaded: (updatedEntry.status === ResourceState.LOADED),
-                error: (updatedEntry.status === ResourceState.ERROR),
-                timeout: (updatedEntry.status === ResourceState.TIMEOUT),
-                completedCount: completed,
-                totalCount: total
-            });
-        };
-
-        var log = this.log = function (showAll) {
-            if (!window.console) {
-                return;
-            }
-
-            var elapsedSeconds = Math.round((Date.now() - timeStarted) / 1000);
-            window.console.log('PxLoader elapsed: ' + elapsedSeconds + ' sec');
-
-            for (var i = 0, len = entries.length; i < len; i++) {
-                var entry = entries[i];
-                if (!showAll && entry.status !== ResourceState.WAITING) {
-                    continue;
-                }
-
-                var message = 'PxLoader: #' + i + ' ' + entry.resource.getName();
-                switch (entry.status) {
-                    case ResourceState.QUEUED:
-                        message += ' (Not Started)';
-                        break;
-                    case ResourceState.WAITING:
-                        message += ' (Waiting)';
-                        break;
-                    case ResourceState.LOADED:
-                        message += ' (Loaded)';
-                        break;
-                    case ResourceState.ERROR:
-                        message += ' (Error)';
-                        break;
-                    case ResourceState.TIMEOUT:
-                        message += ' (Timeout)';
-                        break;
-                }
-
-                if (entry.resource.tags.length > 0) {
-                    message += ' Tags: [' + entry.resource.tags.all.join(',') + ']';
-                }
-
-                window.console.log(message);
-            }
-        };
-    }
-
-    function PxLoaderTags(values) {
-        this.all = [];
-        this.first = null;
-        this.length = 0;
-
-        this.lookup = {};
-
-        if (values) {
-            if (Array.isArray(values)) {
-                this.all = values.slice(0);
-            } else if (typeof values === 'object') {
-                for (var key in values) {
-                    if (values.hasOwnProperty(key)) {
-                        this.all.push(key);
-                    }
-                }
-            } else {
-                this.all.push(values);
-            }
-
-            this.length = this.all.length;
-            if (this.length > 0) {
-                this.first = this.all[0];
-            }
-
-            for (var i = 0; i < this.length; i++) {
-                this.lookup[this.all[i]] = true;
-            }
-        }
-    }
-
-    PxLoaderTags.prototype.intersects = function (other) {
-        if (this.length === 0 || other.length === 0) {
-            return false;
-        }
-
-        if (this.length === 1 && other.length === 1) {
-            return this.first === other.first;
-        }
-
-        if (other.length < this.length) {
-            return other.intersects(this);
-        }
-
-        for (var key in this.lookup) {
-            if (other.lookup[key]) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    function PxLoaderImage(url, tags, priority) {
-        var self = this, loader = null;
-
-        this.img = new Image();
-        this.tags = tags;
-        this.priority = priority;
-
-        var onReadyStateChange = function () {
-            if (self.img.readyState === 'complete') {
-                removeEventHandlers();
-                loader.onLoad(self);
-            }
-        };
-
-        var onLoad = function () {
-            removeEventHandlers();
-            loader.onLoad(self);
-        };
-
-        var onError = function () {
-            removeEventHandlers();
-            loader.onError(self);
-        };
-
-        var removeEventHandlers = function () {
-            self.unbind('load', onLoad);
-            self.unbind('readystatechange', onReadyStateChange);
-            self.unbind('error', onError);
-        };
-
-        this.start = function (pxLoader) {
-            loader = pxLoader;
-
-            self.bind('load', onLoad);
-            self.bind('readystatechange', onReadyStateChange);
-            self.bind('error', onError);
-
-            self.img.src = url;
-        };
-
-        this.checkStatus = function () {
-            if (self.img.complete) {
-                removeEventHandlers();
-                loader.onLoad(self);
-            }
-        };
-
-        this.onTimeout = function () {
-            removeEventHandlers();
-            if (self.img.complete) {
-                loader.onLoad(self);
-            } else {
-                loader.onTimeout(self);
-            }
-        };
-
-        this.getName = function () {
-            return url;
-        };
-
-        this.bind = function (eventName, eventHandler) {
-            if (self.img.addEventListener) {
-                self.img.addEventListener(eventName, eventHandler, false);
-            } else if (self.img.attachEvent) {
-                self.img.attachEvent('on' + eventName, eventHandler);
-            }
-        };
-
-        this.unbind = function (eventName, eventHandler) {
-            if (self.img.removeEventListener) {
-                self.img.removeEventListener(eventName, eventHandler, false);
-            } else if (self.img.detachEvent) {
-                self.img.detachEvent('on' + eventName, eventHandler);
-            }
-        };
-    }
-
-    PxLoader.prototype.addImage = function (url, tags, priority) {
-        var imageLoader = new PxLoaderImage(url, tags, priority);
-        this.add(imageLoader);
-
-        return imageLoader.img;
-    };
-
-    global.PxLoader = PxLoader;
-    global.PxLoaderImage = PxLoaderImage;
-})(this));
-
-var PxResourceState;
-(function (PxResourceState) {
-    PxResourceState[PxResourceState["QUEUED"] = 0] = "QUEUED";
-    PxResourceState[PxResourceState["WAITING"] = 1] = "WAITING";
-    PxResourceState[PxResourceState["LOADED"] = 2] = "LOADED";
-    PxResourceState[PxResourceState["ERROR"] = 3] = "ERROR";
-    PxResourceState[PxResourceState["TIMEOUT"] = 4] = "TIMEOUT";
-})(PxResourceState || (PxResourceState = {}));
 var skylark;
 (function (skylark) {
     var AssetManager = (function (_super) {

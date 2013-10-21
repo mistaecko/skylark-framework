@@ -520,6 +520,51 @@ declare module skylark {
     }
 }
 declare module skylark {
+    class Bitmap {
+        static create(rows, scale?: number): any;
+    }
+}
+interface PxProgressEvent {
+    resource: any;
+    loaded: boolean;
+    error: boolean;
+    timeout: boolean;
+    completedCount: number;
+    totalCount: number;
+}
+interface PxProgressListener {
+    (event: PxProgressEvent): void;
+}
+interface PxCompletionListener {
+    (event: PxProgressEvent): void;
+}
+declare enum PxResourceState {
+    QUEUED,
+    WAITING,
+    LOADED,
+    ERROR,
+    TIMEOUT,
+}
+interface PxResourceLoader {
+    getName(): string;
+}
+declare class PxLoaderImage implements PxResourceLoader {
+    constructor(url: string, tags: string[], priority: number);
+    public img: HTMLImageElement;
+    public getName(): string;
+}
+declare class PxLoader {
+    static ResourceState: PxResourceState;
+    public addCompletionListener(cb: PxCompletionListener, tags?: any): void;
+    public addProgressListener(cb: PxProgressListener, tags?: any): void;
+    public onLoad(a: PxResourceLoader): any;
+    public onError(a: PxResourceLoader): any;
+    public onTimeout(a: PxResourceLoader): any;
+    public addSound(name: string, tags?: any, priority?: number): any;
+    public addImage(name: string, tags?: any, priority?: number): any;
+    public addXml(name: string, tags?: any, priority?: number): any;
+}
+declare module skylark {
     class ClassUtil {
         static getQualifiedClassName(obj): string;
         static getDefinitionByName(name: string): any;
@@ -700,51 +745,6 @@ declare module skylark {
         public dispose(): void;
         public asUrl(): string;
     }
-}
-declare module skylark {
-    class Bitmap {
-        static create(rows, scale?: number): any;
-    }
-}
-interface PxProgressEvent {
-    resource: any;
-    loaded: boolean;
-    error: boolean;
-    timeout: boolean;
-    completedCount: number;
-    totalCount: number;
-}
-interface PxProgressListener {
-    (event: PxProgressEvent): void;
-}
-interface PxCompletionListener {
-    (event: PxProgressEvent): void;
-}
-declare enum PxResourceState {
-    QUEUED,
-    WAITING,
-    LOADED,
-    ERROR,
-    TIMEOUT,
-}
-interface PxResourceLoader {
-    getName(): string;
-}
-declare class PxLoaderImage implements PxResourceLoader {
-    constructor(url: string, tags: string[], priority: number);
-    public img: HTMLImageElement;
-    public getName(): string;
-}
-declare class PxLoader {
-    static ResourceState: PxResourceState;
-    public addCompletionListener(cb: PxCompletionListener, tags?: any): void;
-    public addProgressListener(cb: PxProgressListener, tags?: any): void;
-    public onLoad(a: PxResourceLoader): any;
-    public onError(a: PxResourceLoader): any;
-    public onTimeout(a: PxResourceLoader): any;
-    public addSound(name: string, tags?: any, priority?: number): any;
-    public addImage(name: string, tags?: any, priority?: number): any;
-    public addXml(name: string, tags?: any, priority?: number): any;
 }
 declare class Sound {
     public play(startTime: number, loops: number, transform: SoundTransform);
