@@ -2,6 +2,8 @@
 
 - skylark.js          all classes, non-minified.
 - skylark.min.js      all classes, minified.
+- skylark.js.map      source map file.
+- skylark.min.js.map  source map file.
 - skylark.d.ts        TypeScript declarations.
 - skylark-externs.js  Closure compiler 'externs' for Skylark, use when using Google Closure compiler.
 
