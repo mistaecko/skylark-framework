@@ -4,6 +4,8 @@ var express = require('express');
 
 var projectRootDir = path.join(__dirname, '../');
 
+var rewriteSourceMap = require('../../../util/skylark-tools/lib/rewrite-sourcemap.js').setConnect(require('connect'));
+
 var Server = function(config, app) {
     if(app == null)
         app = express();
@@ -11,7 +13,8 @@ var Server = function(config, app) {
     this.app = app;
 
     for(var key in config) {
-        this[key] = config[key];
+        if(config[key] != null)
+            this[key] = config[key];
     }
 }
 
@@ -62,11 +65,11 @@ Server.prototype = {
 
             if(this.skylarkUri) {
                 app.use(this.skylarkUri, express.static(this.skylarkFsDir));
-                console.log('Mapping: ' + this.skylarkUri + ' => ' + this.skylarkFsDir);
+                console.log('Mapping: ' + this.skylarkUri + ' => ' + path.resolve(this.skylarkFsDir));
             }
             if(this.skylarkSrcUri) {
                 app.use(this.skylarkSrcUri, express.static(this.skylarkFsSrcDir));
-                console.log('Mapping: ' + this.skylarkSrcUri + ' => ' + this.skylarkFsSrcDir);
+                console.log('Mapping: ' + this.skylarkSrcUri + ' => ' + path.resolve(this.skylarkFsSrcDir));
             }
         }
 
@@ -114,7 +117,16 @@ function handleError(err, req, res, next) {
 }
 
 if(require.main === module) {
-    var server = new Server();
+    var skylarkRepoDir = path.join(__dirname, '..', '..', '..', 'skylark');
+    var server = new Server({
+        port: 3000,
+        enableSkylarkHotLinking: true,
+        skylarkUri: '/skylark',
+        skylarkFsDir: skylarkRepoDir + '/target',
+        skylarkSrcUri: 'skylark/src',
+        skylarkFsSrcDir: skylarkRepoDir + '/src'
+    });
+
     server.start();
 } else {
     exports.Server = Server;

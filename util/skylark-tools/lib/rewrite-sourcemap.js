@@ -1,10 +1,15 @@
 var send = require('send');
-var parse = require('connect').utils.parseUrl;
 var Transform = require('stream').Transform;
 
-module.exports = function(root, uri, rewrite) {
+var utils;
+var parse;
+
+function rewriteSourceMap(root, uri, rewrite) {
     if(uri.charAt(0) !== '/')
         uri = '/' + uri;
+
+    if(parse == null)
+        parse = require('connect').utils.parseUrl;
 
     return function(req, res, next) {
         var path = parse(req).pathname;
@@ -55,3 +60,11 @@ module.exports = function(root, uri, rewrite) {
             .pipe(res);
     }
 }
+
+rewriteSourceMap.setConnect = function(connect) {
+    parse = connect.utils.parseUrl;
+    utils = connect.utils;
+    return rewriteSourceMap;
+}
+
+module.exports = rewriteSourceMap;

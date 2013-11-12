@@ -1,4 +1,4 @@
-/// <reference path="../skylark/skylark.d.ts"/>
+/// <reference path="../../../skylark/target/skylark.d.ts"/>
 
 /// <reference path="Game.ts" />
 /// <reference path="utils/ProgressBar.ts"/>
