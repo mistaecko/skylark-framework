@@ -10,7 +10,7 @@
 /// <reference path="../../_harness.d.ts"/>
 require('../../_common.js');
 
-describe.only('TextField', function() {
+describe('TextField', function() {
     var bitmapFont;
     var bitmapFonts;
 
