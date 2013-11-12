@@ -53,12 +53,14 @@ describe('ConcreteTextureTests', function () {
                 expect(texture.base.image).to.eql(image);
             });
 
-            it.skip('should accept an image created from a bitmap dataURL', function() {
-                //note: on FF setting Image#src to a dataURL is asynchronous - width/height will not be
-                // immediately available
+            it('should accept an image created from a bitmap dataURL', function() {
                 var bitmap = Helpers.createBitmap(64, 64, 0xff);
                 var image = new Image();
                 image.src = bitmap;
+                //note: on FF setting Image#src to a dataURL is asynchronous - width/height will not be
+                // immediately available
+                image.width = 64;
+                image.height = 64;
 
                 var texture = new skylark.ConcreteTexture(</*IntelliJ*/any>image);
 

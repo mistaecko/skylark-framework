@@ -231,6 +231,8 @@ module skylark {
         public static get texture():Texture {
             var img:HTMLImageElement = <HTMLImageElement>new NativeImage();
             img.src = MiniBitmapFont.IMAGE_DATA;
+            img.width = MiniBitmapFont.BITMAP_WIDTH;
+            img.height = MiniBitmapFont.BITMAP_HEIGHT;
 
             return new ConcreteTexture(img);
         }

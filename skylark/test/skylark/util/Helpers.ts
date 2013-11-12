@@ -246,7 +246,8 @@ module util {
         public static load(src):JQueryPromise {
             return Helpers.loadAsCanvas(src)
                 .then(function(canvas) {
-                    return Helpers.waitForImage(canvas.toDataURL());
+                    var dataURL = canvas.toDataURL();
+                    return Helpers.waitForImage(dataURL);
                 });
         }
 

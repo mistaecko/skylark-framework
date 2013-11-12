@@ -376,6 +376,8 @@ module skylark/*.text*/ {
 
             var image = new NativeImage();
             image.src = canvas.toDataURL();
+            image.width = width;
+            image.height = height;
 
             return <CanvasImageSource>image;
         }

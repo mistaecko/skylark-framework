@@ -18,6 +18,8 @@ describe('TextureTests', function() {
     var Texture = skylark.Texture;
 
     var red64x64 = 'test/resources/64x64red.png';
+    var green64x64 = 'test/resources/64x64green.png';
+    var blue64x64 = 'test/resources/64x64blue.png';
 
     afterEach(function() {
         if(skylark.Skylark.current)
@@ -30,14 +32,14 @@ describe('TextureTests', function() {
     }
 
     describe('empty', function() {
-        skipIfFirefox.it('should create an empty texture', function(done) {
+        it('should create an empty texture', function(done) {
             var texture = Texture.empty(64, 64, true, true, false, 1);
             // note: the stage is cleared in transparent black, but the image obtained from
             // the canvas will be white - todo verify
             Helpers.assertImage(texture,this, 'test/resources/64x64white.png', done);
         });
 
-        skipIfFirefox.it('should use the global "scale" factor if none is specified', function() {
+        it('should use the global "scale" factor if none is specified', function() {
             // todo remove once IntelliJ has become smarter
             var /*IntelliJ*/Object:any = (<any>window).Object;
 
@@ -56,7 +58,7 @@ describe('TextureTests', function() {
         });
     });
 
-    skipIfFirefox.describe('fromXxx', function() {
+    describe('fromXxx', function() {
 
         it('should create a texture from a canvas', function(done) {
             var width = 64;
@@ -68,7 +70,7 @@ describe('TextureTests', function() {
 
             var context:CanvasRenderingContext2D = canvas.getContext('2d');
 
-            context.fillStyle = '#FF0000';
+            context.fillStyle = '#00FF00';
             context.fillRect(0, 0, 64, 64);
 
             var result = skylark.Texture.fromCanvas(canvas);
@@ -76,19 +78,19 @@ describe('TextureTests', function() {
             expect(result.width).to.eql(64);
             expect(result.height).to.eql(64);
 
-            Helpers.assertImage(result, this, red64x64, done);
+            Helpers.assertImage(result, this, green64x64, done);
         });
 
         it('should create a texture from bitmap data', function(done) {
-            initStarling();
-            var red = 0xffff0000;
+            //initStarling();
+            var blue = 0xff0000ff;
             var bytes = [];
             for(var i = 0; i < 64*64; i++)
-                bytes.push(red);
+                bytes.push(blue);
 
             var bitmap = new skylark.BitmapData(64, 64, bytes);
             var texture = Texture.fromBitmapData(bitmap);
-            Helpers.assertImage(texture, this, red64x64, done);
+            Helpers.assertImage(texture, this, blue64x64, done);
         });
 
         it('should create a texture from a color', function(done) {
@@ -99,7 +101,7 @@ describe('TextureTests', function() {
 
         it('should create a texture from an "embedded" image (string)', function(done) {
             var red1x1 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2P8z8DwHwAFBQIAHl6u2QAAAABJRU5ErkJggg==';
-            var texture = Texture.fromEmbedded(red1x1);
+            var texture = Texture.fromEmbedded(red1x1, 1, 1);
             Helpers.assertImage(texture, this, red1x1, done);
         });
     });

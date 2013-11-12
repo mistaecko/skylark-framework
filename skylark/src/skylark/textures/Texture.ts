@@ -108,6 +108,8 @@ module skylark {
 
             var image = new NativeImage();
             image.src = _Bitmap.create(rows, 1.0);
+            image.width = width;
+            image.height = height;
             return <CanvasImageSource>image;
         }
 
@@ -152,6 +154,8 @@ module skylark {
         public static fromCanvas(canvas:HTMLCanvasElement, generateMipMaps:boolean = true, scale:number = 1) {
             var image = new NativeImage();
             image.src = canvas.toDataURL();
+            image.width = canvas.width;
+            image.height = canvas.height;
             return new ConcreteTexture(image, scale);
         }
 
@@ -182,9 +186,11 @@ module skylark {
          * @param base64String the "embedded" image `src` string
          * @returns {ConcreteTexture}
          */
-        public static fromEmbedded(base64String:string):Texture {
+        public static fromEmbedded(base64String:string, width:number, height:number):Texture {
             var image = new NativeImage();
             image.src = base64String;
+            image.width = width;
+            image.height = height;
             return new ConcreteTexture(image);
         }
 
@@ -196,11 +202,14 @@ module skylark {
             var legalWidth:number = MathUtil.getNextPowerOfTwo(origWidth);
             var legalHeight:number = MathUtil.getNextPowerOfTwo(origHeight);
 
-            var canvas = Skylark.getHelperCanvas(legalWidth, legalHeight);
-            var context = canvas.getContext('2d');
+//            var canvas = Skylark.getHelperCanvas(legalWidth, legalHeight);
+//            var context = canvas.getContext('2d');
 
             var image = new NativeImage();
             image.src = data.asUrl();
+            console.log('fromBitmapData', origWidth, origHeight, legalWidth, legalHeight);
+            image.width = origWidth;
+            image.height = origHeight;
             var concreteTexture:ConcreteTexture = new ConcreteTexture(image);
 
             if(origWidth == legalWidth && origHeight == legalHeight)

@@ -10,7 +10,7 @@
 /// <reference path="../../_harness.d.ts"/>
 require('../../_common.js');
 
-describe('TextField', function() {
+describe.only('TextField', function() {
     var bitmapFont;
     var bitmapFonts;
 
@@ -82,8 +82,8 @@ describe('TextField', function() {
     });
 
     describe('Truetype fonts', function() {
-        skipIfFirefox.it('should render in a single line [left,top]', function(done) {
-            var textfield = new skylark.TextField(100, 50, 'Kaboom', 'Arial', 16, 0x000000);
+        it('should render in a single line [left,top]', function(done) {
+            var textfield = new skylark.TextField(100, 50, 'Kaboom', 'Verdana', 16, 0xffffff);
             textfield.hAlign = skylark.HAlign.LEFT;
             textfield.vAlign = skylark.VAlign.TOP;
             // note: top-left corner of 'K' letter start at (1,3)
