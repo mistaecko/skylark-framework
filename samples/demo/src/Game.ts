@@ -38,7 +38,7 @@ module demo {
                 app.start();
 
                 var game = <demo.Game>app.root;
-                game.start(skylark.Texture.fromEmbedded(Game.BACKGROUND), assets);
+                game.start(skylark.Texture.fromEmbedded(Game.BACKGROUND, 320, 480), assets);
             });
         }
 
