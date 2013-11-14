@@ -49,7 +49,7 @@ module.exports = function(grunt) {
          * @property {String} minifier
          * Configure which tool to use for minification. Valid values are: `closure`, `uglifyjs`.
          */
-        minifier: 'closure',
+        minifier: 'uglifyjs',
 
         /**
          * @property {String} symbol
@@ -303,7 +303,7 @@ module.exports = function(grunt) {
     // load minify, consolidate-sourcemaps tasks
     grunt.loadTasks('../../util/skylark-tools/tasks/');
     //grunt.loadNpmTasks('skylark-tools');
-    grunt.renameTask('consolidate-sourcemaps', 'sourcemap');
+    //grunt.renameTask('consolidate-sourcemaps', 'sourcemap');
 
     //grunt.registerTask('deploy', 'Deploys build to "target" directory', ['concat', 'minify', 'copy']);
 
