@@ -1,4 +1,5 @@
 /// <reference path="_externals.d.ts"/>
+/// <reference path="polyfill/requestanimationframe.ts"/>
 
 /// <reference path="skylark/types.ts"/>
 /// <reference path="skylark/canvas.ts"/>
