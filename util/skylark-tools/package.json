@@ -33,7 +33,8 @@
   "dependencies": {
     "source-map": "~0.1.30",
     "send": "*",
-    "commander": "*"
+    "commander": "*",
+    "connect": "*"
   },
   "peerDependencies": {
   },

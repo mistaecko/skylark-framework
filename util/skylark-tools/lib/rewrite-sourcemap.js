@@ -2,17 +2,16 @@ var send = require('send');
 var Transform = require('stream').Transform;
 
 var utils;
-var parse;
 
 function rewriteSourceMap(root, uri, rewrite) {
     if(uri.charAt(0) !== '/')
         uri = '/' + uri;
 
-    if(parse == null)
-        parse = require('connect').utils.parseUrl;
+    if(utils == null)
+        utils = require('connect').utils;
 
     return function(req, res, next) {
-        var path = parse(req).pathname;
+        var path = utils.parse(req).pathname;
 
         if(path !== uri) {
             next();
@@ -62,7 +61,6 @@ function rewriteSourceMap(root, uri, rewrite) {
 }
 
 rewriteSourceMap.setConnect = function(connect) {
-    parse = connect.utils.parseUrl;
     utils = connect.utils;
     return rewriteSourceMap;
 }
