@@ -1,6 +1,6 @@
 {
   "name": "skylark-tools",
-  "version": "0.0.6",
+  "version": "0.0.6-2",
   "description": "A suite of supporting command-line tools and Grunt tasks for The Skylark Framework",
   "author": {
     "name": "Werner Loibl"
