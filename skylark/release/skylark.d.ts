@@ -1301,7 +1301,7 @@ declare module skylark {
         static fromTexture(texture: Texture, region?: skylark.Rectangle, frame?: skylark.Rectangle): Texture;
         static fromCanvas(canvas: HTMLCanvasElement, generateMipMaps?: boolean, scale?: number): skylark.ConcreteTexture;
         static fromColor(width: number, height: number, color?: number, optimizeForRenderToTexture?: boolean, scale?: number): Texture;
-        static fromEmbedded(base64String: string): Texture;
+        static fromEmbedded(base64String: string, width: number, height: number): Texture;
         static fromBitmapData(data: skylark.BitmapData, generateMipMaps?: boolean, optimizeForRenderToTexture?: boolean, scale?: number): Texture;
         public adjustVertexData(vertexData: skylark.VertexData, vertexID: number, count: number): void;
         public frame : skylark.Rectangle;

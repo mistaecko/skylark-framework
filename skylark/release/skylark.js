@@ -1,3 +1,27 @@
+((function () {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function (callback) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function () {
+                callback(currTime + timeToCall);
+            }, timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+})());
 var NativeImage = Image;
 var skylark;
 (function (skylark) {
@@ -8097,6 +8121,8 @@ var skylark;
 
             var image = new NativeImage();
             image.src = _Bitmap.create(rows, 1.0);
+            image.width = width;
+            image.height = height;
             return image;
         };
 
@@ -8133,6 +8159,8 @@ var skylark;
             if (typeof scale === "undefined") { scale = 1; }
             var image = new NativeImage();
             image.src = canvas.toDataURL();
+            image.width = canvas.width;
+            image.height = canvas.height;
             return new skylark.ConcreteTexture(image, scale);
         };
 
@@ -8149,9 +8177,11 @@ var skylark;
             return texture;
         };
 
-        Texture.fromEmbedded = function (base64String) {
+        Texture.fromEmbedded = function (base64String, width, height) {
             var image = new NativeImage();
             image.src = base64String;
+            image.width = width;
+            image.height = height;
             return new skylark.ConcreteTexture(image);
         };
 
@@ -8164,11 +8194,11 @@ var skylark;
             var legalWidth = skylark.MathUtil.getNextPowerOfTwo(origWidth);
             var legalHeight = skylark.MathUtil.getNextPowerOfTwo(origHeight);
 
-            var canvas = skylark.Skylark.getHelperCanvas(legalWidth, legalHeight);
-            var context = canvas.getContext('2d');
-
             var image = new NativeImage();
             image.src = data.asUrl();
+            console.log('fromBitmapData', origWidth, origHeight, legalWidth, legalHeight);
+            image.width = origWidth;
+            image.height = origHeight;
             var concreteTexture = new skylark.ConcreteTexture(image);
 
             if (origWidth == legalWidth && origHeight == legalHeight)
@@ -8947,6 +8977,8 @@ else if (vAlign === skylark.VAlign.BOTTOM)
 
             var image = new NativeImage();
             image.src = canvas.toDataURL();
+            image.width = width;
+            image.height = height;
 
             return image;
         };
@@ -9808,6 +9840,8 @@ var skylark;
             get: function () {
                 var img = new NativeImage();
                 img.src = MiniBitmapFont.IMAGE_DATA;
+                img.width = MiniBitmapFont.BITMAP_WIDTH;
+                img.height = MiniBitmapFont.BITMAP_HEIGHT;
 
                 return new skylark.ConcreteTexture(img);
             },
